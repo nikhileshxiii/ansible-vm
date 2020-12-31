@@ -1,0 +1,39 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+    - apt: name=wget
+    - apt: name=curl
+    - apt: name=vim
+    - apt: name=htop
+    - apt: name=cargo
+    - apt: name=ruby-dev
+    - apt: name=golang-go
+    - apt: name=texlive-full
+    - apt: name=texstudio
+    - apt: name=texstudio-doc
+    - apt: name=python3
+    - apt: name=python3-pip
+    - apt: name=python3-venv
+    - pip: name=pytest
+    - pip: name=tox
+    - pip: name=virtualenv
+    - pip: name=pep8
+    - apt: name=xfce4
+    - apt: name=xfce4-goodies
+    - apt: name=ubuntu-gnome-desktop
+    - community.general.gem: name=bundle
+    - community.general.gem: name=rake
+    - stat:
+        path: "/home/vagrant/.sdkman/bin/sdkman-init.sh"
+        get_checksum: no
+      register: sym
+    - shell: |
+        curl -s "https://get.sdkman.io" | bash
+        source "$HOME/.sdkman/bin/sdkman-init.sh"
+        sdk install java && sdk install scala && sdk install maven && sdk install gradle && sdk install groovy
+      become: yes
+      become_user: vagrant
+      args:
+        executable: /bin/bash
+      when: sym.stat.islnk is not defined
